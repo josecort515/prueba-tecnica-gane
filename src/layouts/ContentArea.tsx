@@ -16,7 +16,7 @@ const ContentArea: React.FC = () => {
       style={{
         margin: '24px 16px',
         background: token.colorBgContainer,
-        minHeight: 280,
+        width: '100%'
       }}
     >
       <EmployeeList></EmployeeList>

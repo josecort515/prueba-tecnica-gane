@@ -14,31 +14,32 @@ class WorkshiftService {
 
   getWeekSchedule(employee: Employee): Schedule[] {
     const horario: Schedule[] = [];
-    const schedule: Schedule = {
-      day: "",
-      start_at: "",
-      finished_at: "",
-      break_duration: "",
-    };
-    //recorre los dias de la semana
-    employee.relationships.workshifts[0].relationships.workshiftDays.forEach((day) => {
-      schedule.day = this.getDay(day.attributes.day);
-      schedule.start_at = day.attributes.start_at;
-      schedule.finished_at = day.attributes.finished_at;
-        if (day.attributes.break_time_start_at != null) {
-          const inicio = moment(day.attributes.break_time_start_at);
-          const final = moment(day.attributes.break_time_finished_at);
-          const duration = moment.duration(final.diff(inicio));
-          schedule.break_duration = duration.hours() + " horas";
-        } else {
-          schedule.break_duration = "No tiene";
-        }
   
+    // Recorre los días de la semana
+    employee.relationships.workshifts[0].relationships.workshiftDays.forEach((day) => {
+      // Declara el objeto schedule dentro del forEach para evitar la sobreescritura
+      const schedule: Schedule = {
+        day: this.getDay(day.attributes.day),
+        start_at: moment(day.attributes.start_at, "HH:mm:ss").format("HH:mm A"),
+        finished_at: moment(day.attributes.finished_at, "HH:mm:ss").format("HH:mm A"),
+        break_duration: "No tiene"
+      };
+  
+      // Si el día tiene un tiempo de descanso, calculamos su duración
+      if (day.attributes.break_time_start_at != null) {
+        const inicio = moment(day.attributes.break_time_start_at);
+        const final = moment(day.attributes.break_time_finished_at);
+        const duration = moment.duration(final.diff(inicio));
+        schedule.break_duration = duration.hours() + " horas";
+      }
+  
+      // Agrega el objeto schedule al arreglo horario
       horario.push(schedule);
     });
-    
+  
     return horario;
   }
+  
 
   getDay(day: string): string{
     switch (day) {
