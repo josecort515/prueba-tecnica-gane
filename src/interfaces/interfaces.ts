@@ -1,3 +1,8 @@
+export interface AccessControlEmployee {
+    start: string;
+    finish: string;
+    hour_extra: string;
+}
 export interface Schedule{
     day: string;
     start_at: string;
