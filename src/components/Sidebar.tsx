@@ -21,6 +21,8 @@ const Sidebar: React.FC = () => {
       onCollapse={(collapsed, type) => console.log(collapsed, type)}
     >
       <div className="demo-logo-vertical" />
+      <img src="https://th.bing.com/th/id/OIP.Rwn0yo-pFqQQlL8F3FOcZAHaHa?rs=1&pid=ImgDetMain" alt="Logo Gane" style={{width:'100%', marginBottom:'20px'}}/>
+      
       <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']} items={items} />
     </Sider>
   );

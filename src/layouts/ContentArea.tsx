@@ -1,5 +1,7 @@
 import React from 'react';
 import { Layout, theme } from 'antd';
+import EmployeeList from '../pages/EmployeeList';
+import CustomHeader from '../components/CustomHeader';
 
 const { Content } = Layout;
 
@@ -7,23 +9,19 @@ const ContentArea: React.FC = () => {
   const { token } = theme.useToken();
 
   return (
-    <Content
+    
+    <div>
+      <CustomHeader titulo={'Listado de empleados'} subtitle='holiiiiiiiiiis' ></CustomHeader>
+      <Content
       style={{
-        margin: '16px',
-        padding: '16px',
+        margin: '24px 16px',
         background: token.colorBgContainer,
-        borderRadius: token.borderRadiusLG,
-        flex: 1, // Asegurar que ocupa todo el espacio disponible
-        overflow: 'auto', // Para permitir scroll si el contenido es extenso
-        display: 'flex',
-        flexDirection: 'column'
+        minHeight: 280,
       }}
     >
-      <div style={{ flex: 1 }}>
-        <h1>Contenido Principal</h1>
-        <p>Aquí va el contenido de tu aplicación. Puedes reemplazar esto con componentes o vistas específicas.</p>
-      </div>
+      <EmployeeList></EmployeeList>
     </Content>
+    </div>
   );
 };
 

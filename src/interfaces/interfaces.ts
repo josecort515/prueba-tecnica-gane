@@ -1,3 +1,9 @@
+export interface Schedule{
+    day: string;
+    start_at: string;
+    finished_at: string;
+    break_duration: string;
+}
 export interface EmployeesResponse {
     status: number;
     data: Employee[];
