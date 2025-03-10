@@ -3,7 +3,7 @@
 }
 
 .row-info {
-  margin-top: 25px;
+  margin: 25px;
 }
 
 label {
@@ -24,4 +24,11 @@ label {
   font-size: 20px;
   font-weight: bold;
   border-radius: 8px;
+}
+h3 {
+  margin: 20px;
+}
+
+.horario {
+  margin: 25px;
 }

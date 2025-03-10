@@ -9,6 +9,12 @@ import "./EmployeeDetail.css";
 import { DollarCircleTwoTone } from "@ant-design/icons";
 import WorkshiftService from "../services/WorkshiftService";
 import ScheduleEmploye from "../components/ScheduleEmploye";
+import AccessControlEmployee from "../components/AccessControlEmployee";
+import AccessControlService from "../services/AccessControlService";
+import SalaryDetail from "../components/SalaryDetail";
+
+// arreglar la funcion que cuenta las horas extras
+// filtrar las horas trabajadas por semana
 
 const EmployeeDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -36,8 +42,10 @@ const EmployeeDetail: React.FC = () => {
     currency: "COP",
   }).format(employee.attributes.salary);
 
+  const hoursExtra = AccessControlService.getAllAccessControl(employee);
+  
   return (
-    <div>
+    <>
       <CustomHeader titulo={"Informacion de empleado"}></CustomHeader>
       <Content
         style={{
@@ -57,7 +65,7 @@ const EmployeeDetail: React.FC = () => {
             <Col className="col-info" span={8}>
               <Statistic
                 title="Nombre"
-                value={employee.attributes.last_name}
+                value={employee.attributes.first_name}
               ></Statistic>
             </Col>
             <Col className="col-info" span={8}>
@@ -103,7 +111,7 @@ const EmployeeDetail: React.FC = () => {
 
         <div className="horario">
           <h3>Horario de trabajo</h3>
-          <Row className="row-info">
+          <Row className="row-info" justify={"space-around"}>
             <Col className="col-info" span={8}>
               <Statistic
                 title="Tipo de horario"
@@ -111,44 +119,45 @@ const EmployeeDetail: React.FC = () => {
               ></Statistic>
               <ScheduleEmploye employee={employee}></ScheduleEmploye>
             </Col>
-            <Col className="col-info" span={8}>
-              <Statistic
-                title="Horas de trabajo semanal"
-                value={employee.relationships.workshifts[0].attributes.maximun_weekly_hours}
-              ></Statistic>
-            </Col>
-            <Col className="col-info" span={8}>
-              <Statistic
-                title="Horas extras"
-                value={employee.attributes.end_hour}
-              ></Statistic>
-            </Col>
-          </Row>
 
-          <Row className="row-info">
-            <Col className="col-info" span={8}>
-              <Statistic
-                title="Tipo de horario"
-                value={WorkshiftService.getWorkshtifType(employee)}
-              ></Statistic>
-            </Col>
-            <Col className="col-info" span={8}>
-              <Statistic
-                title="Hora de salida"
-                value={employee.attributes.end_hour}
-              ></Statistic>
-            </Col>
-            <Col className="col-info" span={8}>
-              <Statistic
-                title="Dias laborales"
-                value={employee.attributes.work_days}
-              ></Statistic>
+            <Col className="col-info" span={12}>
+              <Row>
+                <Col>
+                  <Row justify={"space-around"}>
+                    <Statistic
+                      title="Control de acceso"
+                      value={'Horas extras'}
+                    ></Statistic>
+
+                    <Statistic
+                      title="Control de acceso"
+                      value={'Recargos'}
+                    ></Statistic>
+                  </Row>
+                  <AccessControlEmployee
+                    employee={employee}
+                  ></AccessControlEmployee>
+                </Col>
+              </Row>
             </Col>
           </Row>
         </div>
 
+        <Divider></Divider>
+        
+        <div>
+          <Row>
+            <Col>
+              <Statistic
+                title="Total horas y valores"
+                value={"Extras + Recargos"}
+              ></Statistic>
+              <SalaryDetail accesControl={hoursExtra} ></SalaryDetail>
+            </Col>
+          </Row>
+        </div>
       </Content>
-    </div>
+    </>
   );
 };
 

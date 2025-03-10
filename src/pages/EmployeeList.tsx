@@ -1,18 +1,20 @@
 import { useRef, useState } from "react";
-import { DeleteFilled, QuestionCircleOutlined, SearchOutlined } from "@ant-design/icons";
+import {
+  DeleteFilled,
+  QuestionCircleOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import type { InputRef, TableColumnsType, TableColumnType } from "antd";
 import { Button, Input, Popconfirm, Space, Table } from "antd";
 import type { FilterDropdownProps } from "antd/es/table/interface";
 import Highlighter from "react-highlight-words";
 import { Employee } from "../interfaces/interfaces";
 import EmployeeService from "../services/EmployeeService";
-import { Link, Route } from "react-router-dom";
-import EmployeeDetail from "./EmployeeDetail";
+import { Link } from "react-router-dom";
 
 type DataIndex = keyof Employee;
 
-const data: Employee[] =
-  EmployeeService.getAllEmployees()?.map((employee) => employee) || [];
+const data: Employee[] = EmployeeService.getAllEmployees()?.map((employee) => employee) || [];
 
 const EmployeeList = () => {
   const [searchText, setSearchText] = useState("");
@@ -125,20 +127,21 @@ const EmployeeList = () => {
       title: "ID",
       dataIndex: "id",
       key: "id",
-      // width: '10%',
       ...getColumnSearchProps("id"),
     },
     {
       title: "Nombre",
-      dataIndex: ["attributes", "first_name"],
+      dataIndex: "attributes",
       key: "first_name",
       ...getColumnSearchProps("attributes.first_name" as DataIndex),
+      render: (attributes) => attributes.first_name,
     },
     {
       title: "Apellido",
-      dataIndex: ["attributes", "last_name"],
+      dataIndex: "attributes",
       key: "last_name",
       ...getColumnSearchProps("attributes.last_name" as DataIndex),
+      render: (attributes) => attributes.last_name,
     },
     {
       title: "Email",
@@ -174,21 +177,21 @@ const EmployeeList = () => {
             placement="topRight"
             title={"Seguro que desea eliminar el empleado?"}
             description={"Esta acción no se puede deshacer"}
-            icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
             okText="Si"
             cancelText="No"
           >
             <Button danger icon={<DeleteFilled />}></Button>
           </Popconfirm>
           <Button
-          onClick={() => console.log(record)}
+            onClick={() => null}
             type="primary"
             // href="/employee-detail"
           >
-            
-                          
-                        
-            <Link to={`/employee-detail/${record.id}`} style={{ color: 'white' }}>
+            <Link
+              to={`/employee-detail/${record.id}`}
+              style={{ color: "white" }}
+            >
               Ver detalle
             </Link>
           </Button>
@@ -197,16 +200,8 @@ const EmployeeList = () => {
     },
   ];
 
-  const rowSelection = {
-    onChange: (selectedRowKeys: React.Key[], selectedRows: Employee[]) => {
-      console.log("Selected Row Keys: ", selectedRowKeys);
-      console.log("Selected Rows: ", selectedRows);
-    },
-  };
-
   return (
     <Table
-      rowSelection={rowSelection}
       columns={columns}
       dataSource={data}
       scroll={{

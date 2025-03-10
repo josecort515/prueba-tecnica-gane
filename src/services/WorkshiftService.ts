@@ -14,25 +14,21 @@ class WorkshiftService {
   getWeekSchedule(employee: Employee): Schedule[] {
     const horario: Schedule[] = [];
   
-    // Recorre los días de la semana
-    employee.relationships.workshifts[0].relationships.workshiftDays.forEach((day) => {
-      // Declara el objeto schedule dentro del forEach para evitar la sobreescritura
+    employee.relationships.workshifts[0].relationships.workshiftDays.map((day) => {
       const schedule: Schedule = {
         day: this.getDay(day.attributes.day),
         start_at: moment(day.attributes.start_at, "HH:mm:ss").format("HH:mm A"),
         finished_at: moment(day.attributes.finished_at, "HH:mm:ss").format("HH:mm A"),
-        break_duration: "No tiene"
+        break_duration: "--"
       };
   
-      // Si el día tiene un tiempo de descanso, calculamos su duración
-      if (day.attributes.break_time_start_at != null) {
-        const inicio = moment(day.attributes.break_time_start_at);
-        const final = moment(day.attributes.break_time_finished_at);
+      if (day.attributes.break_time_start_at && day.attributes.break_time_finished_at) {
+        const inicio = moment(day.attributes.break_time_start_at, "HH:mm:ss");
+        const final = moment(day.attributes.break_time_finished_at, "HH:mm:ss");
         const duration = moment.duration(final.diff(inicio));
-        schedule.break_duration = duration.hours() + " horas";
+        schedule.break_duration = duration.hours();
       }
   
-      // Agrega el objeto schedule al arreglo horario
       horario.push(schedule);
     });
   
@@ -54,7 +50,7 @@ class WorkshiftService {
         return "Viernes";
       case '6':
         return "Sabado";
-      case '7':
+      case '0':
         return "Domingo";
       default:
         return "Dia no valido";

@@ -1,13 +1,25 @@
+export interface SalaryDetailProps {
+    extraHours: HourExtra[];
+}
+
+export interface HourExtra {
+    hour: number;
+    type: string;
+    value: number;
+    total: number;
+}
 export interface AccessControlEmployee {
+    day: string;
     start: string;
     finish: string;
-    hour_extra: string;
+    hour_extra: HourExtra[] ;
+    hour_worked: number;
 }
 export interface Schedule{
     day: string;
     start_at: string;
     finished_at: string;
-    break_duration: string;
+    break_duration: number | string;
 }
 export interface EmployeesResponse {
     status: number;
@@ -15,6 +27,10 @@ export interface EmployeesResponse {
 }
 
 export interface Employee {
+    workshifts: any;
+    accessControls: any;
+    first_name: any;
+    last_name: any;
     type: "employee";
     id: number;
     attributes: EmployeeAttributes;
@@ -74,6 +90,8 @@ export interface WorkshiftDayAttributes {
 }
 
 export interface AccessControl {
+    check_in(check_in: any): unknown;
+    check_out(check_out: any): unknown;
     type: "access_control";
     id: number;
     attributes: AccessControlAttributes;
