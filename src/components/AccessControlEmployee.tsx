@@ -85,7 +85,6 @@ const AcessControlEmploye: React.FC<AccessControlEmployeProps> = ({
         columns={columns}
         pagination={false}
         scroll={{ y: 400 }}
-        rowKey="id"
         rowHoverable={true}
       />
     </div>

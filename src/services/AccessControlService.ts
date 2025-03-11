@@ -34,8 +34,12 @@ class AccessControlService {
     return horaExtraDiurna;
   }
 
+  getHourExtra(finalSalidaControl: string, finalHorarioSalida: string){
+    const horarioSalida = moment(finalHorarioSalida, 'HH:mm:ss');
+    const salidaControl = moment(finalSalidaControl, 'HH:mm:ss');
+    const almuerzoInicio = moment('12:00:00', 'HH:mm:ss');
+    const almuerzoFin = moment('14:00:00', 'HH:mm:ss');
 
-  y
     let horasExtras = salidaControl.diff(horarioSalida, 'hours', true);
 
     // Descontar el tiempo de almuerzo si aplica
@@ -64,20 +68,51 @@ class AccessControlService {
   getWorkedHoursForDay(accessControl: AccessControl, workshift: Workshift) {
     const checkIn = moment(accessControl.attributes.check_in);
     const checkOut = moment(accessControl.attributes.check_out);
-    const duration = moment.duration(checkOut.diff(checkIn));
-    switch (workshift.attributes.schedule_type) {
-      //Fixed: Horario fijo de Lunes a Viernes de 08:00 a 18:00 con un descanso de 12:00 a 14:00 y Sabado de 08:00 a 12:00
+    const duration = moment.duration(checkOut.diff(checkIn)).asHours();
+    let lunchDeduction = 0;
+    const lunchStart = moment("12:00:00", "HH:mm:ss");
+    const lunchEnd = moment("14:00:00", "HH:mm:ss");
+    const dayOfWeek = checkIn.isoWeekday();
+
+    // Si la salida es después de las 14:00, se debe descontar el almuerzo
+    if (checkOut.isAfter(lunchEnd)) {
+      lunchDeduction = 2; // Se descuentan 2 horas
+    } else if (checkOut.isBetween(lunchStart, lunchEnd, undefined, "[)")) {
+        // Si la salida es durante el almuerzo, se descuenta el tiempo desde las 12:00 hasta la salida
+      lunchDeduction = checkOut.diff(lunchStart, 'hours', true);
+    } else {
+      lunchDeduction = 0;
+    }
+    
+    const scheduleType = workshift.attributes.schedule_type;
+    if (scheduleType === 'administrative' || scheduleType === 'rotatory'){
+      if (dayOfWeek === 6 || dayOfWeek === 7) {
+         // Si la salida es después de las 14:00, se debe descontar el almuerzo
+        if (checkOut.isAfter(lunchEnd)) {
+          lunchDeduction = 2; // Se descuentan 2 horas
+        } else if (checkOut.isBetween(lunchStart, lunchEnd, undefined, "[)")) {
+            // Si la salida es durante el almuerzo, se descuenta el tiempo desde las 12:00 hasta la salida
+          lunchDeduction = checkOut.diff(lunchStart, 'hours', true);
+        } else {
+          lunchDeduction = 0;
+        }
+      }
+    }
+
+    
+    switch (scheduleType) {
+      //Fixed: Horario fijo de Lunes a Viernes de 08:00 a 18:00 con un descanso de 12:00 a 14:00 y Sábado de 08:00 a 12:00
       case "fixed":
-        return Math.round(duration.asHours() - 2);
-        break;
+        return Math.round(duration - lunchDeduction);
       // Fixed_halftime: Horario fijo de medio tiempo de Lunes a Viernes de 08:00 a 12:00
       case "fixed_halftime":
-        return Math.round(duration.asHours());
-
-        break;
+        return Math.round(duration - lunchDeduction);
       // Flexible: Horario rotativo no tiene día ni hora entrada establecido pero se toma 2 horas de 12:00 a 2:00.
       case "fexible":
-        return Math.round(duration.asHours() - 2);
+        return Math.round(duration - lunchDeduction);
+      case 'administrative':
+      case 'rotatory':
+          return Math.round(duration - lunchDeduction);
         break;
       //horario incorrecto
       default:
