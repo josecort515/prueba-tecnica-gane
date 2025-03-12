@@ -1,34 +1,17 @@
-.col-info {
-  text-align: center;
-}
-
 .row-info {
   margin: 25px;
+  justify-content: space-around;
+}
+
+.col-info {
+  text-align: center;
+  align-content: center;
 }
 
 label {
   color: darkgray;
 }
 
-.col-info-salary {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  margin-top: 25px;
-}
-
-.col-info-salary .ant-tag {
-  width: auto;
-  padding: 10px 10px;
-  font-size: 20px;
-  font-weight: bold;
-  border-radius: 8px;
-}
 h3 {
   margin: 20px;
-}
-
-.horario {
-  margin: 25px;
 }

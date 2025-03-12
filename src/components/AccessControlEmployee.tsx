@@ -66,7 +66,7 @@ const AcessControlEmploye: React.FC<AccessControlEmployeProps> = ({
             hourExtras.map((extra, index) => (
               <Row key={index}>
                 <Tag color={tagColorType(extra.type)} >
-                  {(extra.type === 'RD' || extra.type === 'RC')? extra.type : parseFloat(extra.hour.toFixed(0)).toString().concat(' ', extra.type)}
+                  {(extra.type === 'RD' || extra.type === 'RC' || extra.type ==='RND')? extra.type : parseFloat(extra.hour.toFixed(0)).toString().concat(' ', extra.type)}
                 </Tag>
               </Row>
       )))
@@ -81,6 +81,7 @@ const AcessControlEmploye: React.FC<AccessControlEmployeProps> = ({
   return (
     <div>
       <Table
+      style={{padding:'30px'}}
         dataSource={dataSource}
         columns={columns}
         pagination={false}

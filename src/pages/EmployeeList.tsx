@@ -1,30 +1,29 @@
 import { useRef, useState } from "react";
 import {
-  DeleteFilled,
-  QuestionCircleOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
 import type { InputRef, TableColumnsType, TableColumnType } from "antd";
-import { Button, Input, Popconfirm, Space, Table } from "antd";
+import { Button, Input, Space, Table } from "antd";
 import type { FilterDropdownProps } from "antd/es/table/interface";
 import Highlighter from "react-highlight-words";
 import { Employee } from "../interfaces/interfaces";
 import EmployeeService from "../services/EmployeeService";
 import { Link } from "react-router-dom";
 
-type DataIndex = keyof Employee;
 
-const data: Employee[] = EmployeeService.getAllEmployees()?.map((employee) => employee) || [];
+const data: Employee[] =
+  EmployeeService.getAllEmployees()?.map((employee) => employee) || [];
 
 const EmployeeList = () => {
+
   const [searchText, setSearchText] = useState("");
-  const [searchedColumn, setSearchedColumn] = useState<DataIndex | "">("");
+  const [searchedColumn, setSearchedColumn] = useState<string>("");
   const searchInput = useRef<InputRef>(null);
 
   const handleSearch = (
     selectedKeys: string[],
     confirm: FilterDropdownProps["confirm"],
-    dataIndex: DataIndex
+    dataIndex: string
   ) => {
     confirm();
     setSearchText(selectedKeys[0]);
@@ -36,9 +35,7 @@ const EmployeeList = () => {
     setSearchText("");
   };
 
-  const getColumnSearchProps = (
-    dataIndex: DataIndex
-  ): TableColumnType<Employee> => ({
+  const getColumnSearchProps = (dataIndex: string): TableColumnType<Employee> => ({
     filterDropdown: ({
       setSelectedKeys,
       selectedKeys,
@@ -99,27 +96,42 @@ const EmployeeList = () => {
       <SearchOutlined style={{ color: filtered ? "#1677ff" : undefined }} />
     ),
     onFilter: (value, record) => {
-      const recordValue = record[dataIndex]
-        ? record[dataIndex].toString().toLowerCase()
-        : "";
-      return recordValue.includes((value as string).toLowerCase());
+      // Manejo diferente según si es un campo anidado o no
+      if (dataIndex === 'id') {
+        return record.id.toString().toLowerCase().includes((value as string).toLowerCase());
+      } else if (['first_name', 'last_name', 'email', 'charge', 'salary'].includes(dataIndex)) {
+        // Para campos anidados dentro de attributes
+        const attributeValue = record.attributes[dataIndex as keyof typeof record.attributes];
+        return attributeValue 
+          ? attributeValue.toString().toLowerCase().includes((value as string).toLowerCase())
+          : false;
+      }
+      return false;
     },
     onFilterDropdownOpenChange: (open) => {
       if (open) {
         setTimeout(() => searchInput.current?.select(), 100);
       }
     },
-    render: (text) =>
-      searchedColumn === dataIndex ? (
+    render: (text, record) => {
+      // Determinar el texto a mostrar y resaltar según el tipo de columna
+      let displayText = text;
+      
+      if (dataIndex === 'first_name' || dataIndex === 'last_name') {
+        displayText = record.attributes[dataIndex];
+      }
+      
+      return searchedColumn === dataIndex ? (
         <Highlighter
           highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
           searchWords={[searchText]}
           autoEscape
-          textToHighlight={text ? text.toString() : ""}
+          textToHighlight={displayText ? displayText.toString() : ""}
         />
       ) : (
-        text
-      ),
+        displayText
+      );
+    }
   });
 
   const columns: TableColumnsType<Employee> = [
@@ -131,35 +143,32 @@ const EmployeeList = () => {
     },
     {
       title: "Nombre",
-      dataIndex: "attributes",
+      dataIndex: ["attributes", "first_name"],
       key: "first_name",
-      ...getColumnSearchProps("attributes.first_name" as DataIndex),
-      render: (attributes) => attributes.first_name,
+      ...getColumnSearchProps("first_name"),
     },
     {
       title: "Apellido",
-      dataIndex: "attributes",
+      dataIndex: ["attributes", "last_name"],
       key: "last_name",
-      ...getColumnSearchProps("attributes.last_name" as DataIndex),
-      render: (attributes) => attributes.last_name,
+      ...getColumnSearchProps("last_name"),
     },
     {
       title: "Email",
       dataIndex: ["attributes", "email"],
       key: "email",
-      ...getColumnSearchProps("attributes.email" as DataIndex),
+      ...getColumnSearchProps("email"),
     },
     {
       title: "Cargo",
       dataIndex: ["attributes", "charge"],
       key: "charge",
-      ...getColumnSearchProps("attributes.charge" as DataIndex),
+      ...getColumnSearchProps("charge"),
     },
     {
       title: "Salario",
       dataIndex: ["attributes", "salary"],
       key: "salary",
-      // width: '15%',
       render: (value) =>
         new Intl.NumberFormat("es-CO", {
           style: "currency",
@@ -171,22 +180,11 @@ const EmployeeList = () => {
     {
       title: "Opciones",
       width: "15%",
-      render: (record) => (
+      render: (_, record) => (
         <Space size="middle">
-          <Popconfirm
-            placement="topRight"
-            title={"Seguro que desea eliminar el empleado?"}
-            description={"Esta acción no se puede deshacer"}
-            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
-            okText="Si"
-            cancelText="No"
-          >
-            <Button danger icon={<DeleteFilled />}></Button>
-          </Popconfirm>
+          
           <Button
-            onClick={() => null}
             type="primary"
-            // href="/employee-detail"
           >
             <Link
               to={`/employee-detail/${record.id}`}

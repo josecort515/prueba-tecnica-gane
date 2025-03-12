@@ -8,6 +8,7 @@ interface ScheduleEmployeProps {
 }
 
 const ScheduleEmploye: React.FC<ScheduleEmployeProps> = ({ employee }) => {
+
   const [dataSource, setDataSource] = useState<any[]>([]);
 
   useEffect(() => {
@@ -53,7 +54,11 @@ const ScheduleEmploye: React.FC<ScheduleEmployeProps> = ({ employee }) => {
 
   return (
     <div>
-      <Table dataSource={dataSource} columns={columns} pagination={false} />
+      <Table 
+      dataSource={dataSource} 
+      columns={columns}
+      style={{padding:'30px'}}
+      pagination={false} />
     </div>
   );
 };

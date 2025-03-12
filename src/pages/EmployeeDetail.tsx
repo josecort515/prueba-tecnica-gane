@@ -4,158 +4,118 @@ import { Employee } from "../interfaces/interfaces";
 import EmployeeService from "../services/EmployeeService";
 import CustomHeader from "../components/CustomHeader";
 import { Content } from "antd/es/layout/layout";
-import { Col, Divider, Row, Statistic, Tag, theme } from "antd";
+import { Divider, Spin, theme } from "antd";
 import "./EmployeeDetail.css";
-import { DollarCircleTwoTone } from "@ant-design/icons";
 import WorkshiftService from "../services/WorkshiftService";
-import ScheduleEmploye from "../components/ScheduleEmploye";
-import AccessControlEmployee from "../components/AccessControlEmployee";
 import AccessControlService from "../services/AccessControlService";
-import SalaryDetail from "../components/SalaryDetail";
-
-// arreglar la funcion que cuenta las horas extras
-// filtrar las horas trabajadas por semana
+import { SalaryCalculatorService } from "../services/SalaryCalculatorService";
+import PersonalInfoSection from "../components/PersonalInfoSection";
+import WorkScheduleSection from "../components/WorkScheduleSection";
+import SalaryInfoSection from "../components/SalaryInfoSection";
 
 const EmployeeDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [employee, setEmployee] = useState<Employee | null>(null);
-
+  const [loading, setLoading] = useState<boolean>(true);
   const { token } = theme.useToken();
 
   useEffect(() => {
-    const fetchEmployee = () => {
-      const employeeData = EmployeeService.getEmployeeById(Number(id));
-      if (employeeData) {
-        setEmployee(employeeData);
+    const fetchEmployee = async () => {
+      try {
+        const employeeData = EmployeeService.getEmployeeById(Number(id));
+        if (employeeData) {
+          setEmployee(employeeData);
+        }
+      } catch (error) {
+        console.error("Error al cargar datos del empleado:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchEmployee();
   }, [id]);
 
-  if (!employee) {
-    return <div>Cargando...</div>;
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <Spin size="large" tip="Cargando información del empleado..." />
+      </div>
+    );
   }
 
-  const salary = Intl.NumberFormat("es-CO", {
-    style: "currency",
-    currency: "COP",
-  }).format(employee.attributes.salary);
+  if (!employee) {
+    return <div>No se encontró información del empleado.</div>;
+  }
 
+  // Cálculos de datos
   const hoursExtra = AccessControlService.getAllAccessControl(employee);
+  const salaryCalculatorService = new SalaryCalculatorService();
+  const salarioFinal = salaryCalculatorService.salarioDevengar(
+    employee.attributes.salary,
+    hoursExtra
+  );
+  const totalHorasTrabajadas = AccessControlService.getAllWorkedHours(employee);
   
+  const horasExtras = hoursExtra.reduce((total, record) => {
+    return (
+      total +
+      record.hour_extra.reduce(
+        (subtotal, extra) =>
+          !["RC", "RD", "RND"].includes(extra.type)
+            ? subtotal + extra.hour
+            : subtotal,
+        0
+      )
+    );
+  }, 0);
+
+  const recargos = hoursExtra.reduce((total, record) => {
+    return (
+      total +
+      record.hour_extra.reduce(
+        (subtotal, extra) =>
+          ["RC", "RD", "RND"].includes(extra.type)
+            ? subtotal + extra.hour
+            : subtotal,
+        0
+      )
+    );
+  }, 0);
+
+  const workShiftType = WorkshiftService.getWorkshtifType(employee);
+
   return (
     <>
-      <CustomHeader titulo={"Informacion de empleado"}></CustomHeader>
+      <CustomHeader titulo={"Información de empleado"} backRoute="/" />
       <Content
         style={{
           margin: "24px 16px",
           background: token.colorBgContainer,
           minHeight: 280,
           borderRadius: "10px",
+          padding: "20px",
         }}
       >
-        <div style={{ padding: "20px" }}>
-          <h3>Informacion Personal</h3>
-
-          <Row className="row-info">
-            <Col className="col-info" span={8}>
-              <Statistic title="Identificacion" value={employee.id}></Statistic>
-            </Col>
-            <Col className="col-info" span={8}>
-              <Statistic
-                title="Nombre"
-                value={employee.attributes.first_name}
-              ></Statistic>
-            </Col>
-            <Col className="col-info" span={8}>
-              <Statistic
-                title="Apellido"
-                value={employee.attributes.last_name}
-              ></Statistic>
-            </Col>
-          </Row>
-
-          <Row className="row-info">
-            <Col className="col-info" span={8}>
-              <Statistic
-                title="Ocupación"
-                value={employee.attributes.charge}
-              ></Statistic>
-            </Col>
-            <Col className="col-info" span={8}>
-              <Statistic
-                title="Correo electronico"
-                value={employee.attributes.email}
-              ></Statistic>
-            </Col>
-            <Col className="col-info" span={8}>
-              <Statistic
-                title="Celular"
-                value={employee.attributes.phone}
-              ></Statistic>
-            </Col>
-          </Row>
-
-          <Row className="row-info">
-            <Col className="col-info-salary" span={8}>
-              <label>Salario base</label>
-              <Tag icon={<DollarCircleTwoTone />} color="processing">
-                {salary}
-              </Tag>
-            </Col>
-          </Row>
-        </div>
+        <PersonalInfoSection employee={employee} />
 
         <Divider />
 
-        <div className="horario">
-          <h3>Horario de trabajo</h3>
-          <Row className="row-info" justify={"space-around"}>
-            <Col className="col-info" span={8}>
-              <Statistic
-                title="Tipo de horario"
-                value={WorkshiftService.getWorkshtifType(employee)}
-              ></Statistic>
-              <ScheduleEmploye employee={employee}></ScheduleEmploye>
-            </Col>
+        <WorkScheduleSection 
+          employee={employee} 
+          workShiftType={workShiftType}
+          horasExtras={horasExtras}
+          recargos={recargos}
+          totalHorasTrabajadas={totalHorasTrabajadas}
+        />
 
-            <Col className="col-info" span={12}>
-              <Row>
-                <Col>
-                  <Row justify={"space-around"}>
-                    <Statistic
-                      title="Control de acceso"
-                      value={'Horas extras'}
-                    ></Statistic>
+        <Divider />
 
-                    <Statistic
-                      title="Control de acceso"
-                      value={'Recargos'}
-                    ></Statistic>
-                  </Row>
-                  <AccessControlEmployee
-                    employee={employee}
-                  ></AccessControlEmployee>
-                </Col>
-              </Row>
-            </Col>
-          </Row>
-        </div>
-
-        <Divider></Divider>
-        
-        <div>
-          <Row>
-            <Col>
-              <Statistic
-                title="Total horas y valores"
-                value={"Extras + Recargos"}
-              ></Statistic>
-              <SalaryDetail accesControl={hoursExtra} ></SalaryDetail>
-            </Col>
-          </Row>
-        </div>
+        <SalaryInfoSection 
+          accessControl={hoursExtra}
+          salarioBase={employee.attributes.salary}
+          salarioFinal={salarioFinal}
+        />
       </Content>
     </>
   );

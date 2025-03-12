@@ -1,21 +1,19 @@
 import React from 'react';
-import { Layout, theme } from 'antd';
+import { Layout } from 'antd';
 import EmployeeList from '../pages/EmployeeList';
 import CustomHeader from '../components/CustomHeader';
 
 const { Content } = Layout;
 
 const ContentArea: React.FC = () => {
-  const { token } = theme.useToken();
 
   return (
     
     <div>
-      <CustomHeader titulo={'Listado de empleados'} subtitle='holiiiiiiiiiis' ></CustomHeader>
+      <CustomHeader titulo={'Listado de empleados'}></CustomHeader>
       <Content
       style={{
         margin: '24px 16px',
-        background: token.colorBgContainer,
         width: '100%'
       }}
     >

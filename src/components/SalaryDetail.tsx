@@ -97,30 +97,26 @@ const SalaryDetail = ({
   return (
     <>
       <Table
-        scroll={{ y: 400 }}
         columns={columns}
         dataSource={hourExtraGroup()}
         bordered
         summary={() => (
           <Table.Summary fixed>
             <Table.Summary.Row>
-              <Table.Summary.Cell index={0} align="end">
-                Gran total
+              <Table.Summary.Cell index={0} align="end" >
+                <strong>Gran total </strong>
               </Table.Summary.Cell>
               <Table.Summary.Cell index={1} align="end">
                 {}
               </Table.Summary.Cell>
               <Table.Summary.Cell index={2} align="end"></Table.Summary.Cell>
               <Table.Summary.Cell index={3} align="end">
-                {hourExtraValue()}
+                <strong>{hourExtraValue()}</strong>
               </Table.Summary.Cell>
             </Table.Summary.Row>
           </Table.Summary>
         )}
       />
-      {/* {data.map((dat) => (
-      <li key={dat.type}>{dat.type}: {dat.hour} horas, {dat.value} valor por hora, {dat.total} total</li>
-    ))} */}
     </>
   );
 };

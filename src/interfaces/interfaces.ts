@@ -90,8 +90,8 @@ export interface WorkshiftDayAttributes {
 }
 
 export interface AccessControl {
-    check_in(check_in: any): unknown;
-    check_out(check_out: any): unknown;
+    check_in(check_in: any): Date;
+    check_out(check_out: any): Date;
     type: "access_control";
     id: number;
     attributes: AccessControlAttributes;
