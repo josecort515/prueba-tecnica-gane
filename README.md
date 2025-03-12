@@ -27,7 +27,7 @@ Aplicación web desarrollada con React + TypeScript, diseñada principalmente pa
 ### Listado de empleados
 
 
-![Listado de empleados]()
+![Listado de empleados](/src/assets/listado.png)
   - Se puede hacer la busqueda de los empleados por informacion de cada columna, dandole click al icono de lupa
   - Ordena a los empleados por el salario que tienen, ascendente o descendente
 
