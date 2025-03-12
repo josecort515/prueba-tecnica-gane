@@ -14,26 +14,33 @@ Aplicación web desarrollada con React + TypeScript, diseñada principalmente pa
 
  * Modifique algunos de las horas de salida en el control de acceso para varios empleados, esto para corrovorar que las funnciones estaban bien 👍
 ## Tecnologías Utilizadas
-- ![React](/src/assets/react.svg)
-- ![TypeScript](/src/assets/ts.png)
-- ![Ant Design (antd) - libreria de componentes](/src/assets/ant.svg)
-- ![React Router DOM](/src/assets/react-router-icon-dom.png)
-- ![Vite](/src/assets/vite.png)
-- ![Moment.js](/src/assets/moment.png)
+- React <img src="/src/assets/react.svg" height="60">
+- TypeScrip <img src="/src/assets/ts.png" height="60">
+- Ant Design (antd) - Libreria de componentes <img src="/src/assets/ant.svg" height="60">
+- React Router DOM <img src="/src/assets/react-router-icon-dom.png" height="60">
+- Vite <img src="/src/assets/vite.png" height="60">
+- Moment.js - Libreria para manejo de fechas <img src="/src/assets/moment.png" height="60">
 
 ## Imagenes de la interfaz
 
-![Listado de empleados](/src/assets/listado.png)
+
+### Listado de empleados
+
+
+![Listado de empleados]()
   - Se puede hacer la busqueda de los empleados por informacion de cada columna, dandole click al icono de lupa
   - Ordena a los empleados por el salario que tienen, ascendente o descendente
 
 
+### Informacion general de empleado
 ![Informacion general de empleado](/src/assets/info-empleado.png)
   - Muestra los atributos del empleado
   - Horario asignado
   - Control de acceso
   - Clasificacion de hora extras y recargos
 
+
+### Informacion de salario de empleado
 ![Informacion de salario de empleado](/src/assets/info-salario.png)
   - Tabla con el total de horas extras, valor de cada uno segun el salario del empleado, y total a pagar por horax y recargos
   - Salario base
