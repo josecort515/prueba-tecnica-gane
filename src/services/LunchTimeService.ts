@@ -17,7 +17,7 @@ export class LunchTimeService {
  * proceso
  * 1. Define el período de almuerzo para la fecha dada (12:00:00 - 14:00:00)
  * 2. Si la salida es después de las 14:00, deduce 2 horas completas
- * 3. Si la salida está entre 12:00 y 14:00, no hay deducción
+ * 3. Si la salida está entre 12:00 y 14:00, calcula las horas
  * 4. Si la salida es antes de las 12:00, no hay deducción
  */
   static calculateLunchDeduction(checkOut: moment.Moment): number {
@@ -29,7 +29,8 @@ export class LunchTimeService {
     }
     
     if (checkOut.isBetween(lunchStart, lunchEnd, undefined, "[)")) {
-      return 0;
+      const diffHours = checkOut.diff(lunchStart, 'hours', true);
+      return Math.round(diffHours);
     }
 
     return 0;

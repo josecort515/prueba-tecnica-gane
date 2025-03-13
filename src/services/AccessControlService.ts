@@ -36,7 +36,7 @@ class AccessControlService {
       case "flexible":
         return Math.round(duration - lunchDeduction);
       case "fixed_halftime":
-        return Math.round(duration);
+        return Math.round(duration - lunchDeduction);
       default:
         return 0;
     }
@@ -111,16 +111,15 @@ class AccessControlService {
    * 3. Calcula los diferentes tipos de horas extras según horario y día
    */
   private calculateHourExtras(employee: Employee, accessControl: AccessControl) {
-    if (!employee.relationships.workshifts[0].relationships.workshiftDays.length) {
-      return [];
-    }
-
     const workshiftDay = employee.relationships.workshifts[0].relationships.workshiftDays[0];
     const checkOut = moment(accessControl.attributes.check_out);
+    const checkIn = moment(accessControl.attributes.check_in);
 
     return this.extraHoursService.calculateExtraHourTypes(
       checkOut,
-      moment(`${checkOut.format("YYYY-MM-DD")} ${workshiftDay.attributes.finished_at}`),
+      employee.relationships.workshifts.length === 0
+      ?moment(checkIn).add(8, 'hours')
+      :moment(`${checkOut.format("YYYY-MM-DD")} ${workshiftDay.attributes.finished_at}`),
       checkOut.day() === 0,
       employee.attributes.salary,
       employee.relationships.workshifts[0].attributes.maximun_weekly_hours

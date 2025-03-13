@@ -1,6 +1,7 @@
 import moment from "moment";
 import { HourExtra } from "../interfaces/interfaces";
 import { SalaryCalculatorService } from "./SalaryCalculatorService";
+import { LunchTimeService } from "./LunchTimeService";
 
 
 export class ExtraHoursService {
@@ -28,7 +29,7 @@ export class ExtraHoursService {
     const checkOut = moment(checkOutTime);
     const scheduledEnd = moment(scheduledEndTime);
     const nightShiftStart = moment(`${checkOut.format('YYYY-MM-DD')} 21:00:00`);
-
+    const lunchDeduction = LunchTimeService.calculateLunchDeduction(checkOut);
     let regularExtra = 0;
     let nightExtra = 0;
 
@@ -44,9 +45,8 @@ export class ExtraHoursService {
         }
       }
     }
-
     return {
-      horasExtrasAntes: Math.round(regularExtra),
+      horasExtrasAntes: Math.round(regularExtra - lunchDeduction),
       horasExtrasDespues: Math.round(nightExtra),
     };
   }
@@ -124,7 +124,7 @@ export class ExtraHoursService {
     if (horasExtrasDespues > 0 && !isSundayOrHoliday) {
       this.addExtraHour(
         extraHours,
-        horasExtrasDespues,
+        1,
         "RC",
         this.salaryCalculator.getLaboralHourSalary(salary, maxWeeklyHours) * 0.35 // 35% extra
       );
@@ -134,7 +134,7 @@ export class ExtraHoursService {
     if (isSundayOrHoliday) {
       this.addExtraHour(
         extraHours,
-        horasExtrasAntes,
+        1,
         "RD",
         this.salaryCalculator.getLaboralHourSalary(salary, maxWeeklyHours) * 0.75 // 75% extra
       );
