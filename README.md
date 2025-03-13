@@ -14,12 +14,12 @@ Aplicación web desarrollada con React + TypeScript, diseñada principalmente pa
 
  * Modifique algunos de las horas de salida en el control de acceso para varios empleados, esto para corrovorar que las funnciones estaban bien 👍
 ## Tecnologías Utilizadas
-- React <img src="/src/assets/react.svg" height="60">
-- TypeScrip <img src="/src/assets/ts.png" height="60">
-- Ant Design (antd) - Libreria de componentes <img src="/src/assets/ant.svg" height="60">
-- React Router DOM <img src="/src/assets/react-router-icon-dom.png" height="60">
-- Vite <img src="/src/assets/vite.png" height="60">
-- Moment.js - Libreria para manejo de fechas <img src="/src/assets/moment.png" height="60">
+- <img src="/src/assets/react.svg" height="60"> React
+- <img src="/src/assets/ts.png" height="60"> TypeScrip
+- <img src="/src/assets/ant.svg" height="60"> Ant Design (antd) - Libreria de componentes 
+- <img src="/src/assets/react-router-icon-dom.png" height="60"> React Router DOM 
+- <img src="/src/assets/vite.png" height="60"> Vite 
+- <img src="/src/assets/moment.png" height="60"> Moment.js - Libreria para manejo de fechas 
 
 ## Imagenes de la interfaz
 
@@ -27,7 +27,7 @@ Aplicación web desarrollada con React + TypeScript, diseñada principalmente pa
 ### Listado de empleados
 
 
-![Listado de empleados]()
+![Listado de empleados](/src/assets/listado.png)
   - Se puede hacer la busqueda de los empleados por informacion de cada columna, dandole click al icono de lupa
   - Ordena a los empleados por el salario que tienen, ascendente o descendente
 
